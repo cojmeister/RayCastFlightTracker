@@ -1,4 +1,4 @@
-import { List } from "@raycast/api";
+import { getPreferenceValues, List } from "@raycast/api";
 
 export function makeListDetail(title: string, detail?: string, isDate = false) {
   let data: string;
@@ -15,4 +15,13 @@ export function makeListDetail(title: string, detail?: string, isDate = false) {
     }
   }
   return <List.Item.Detail.Metadata.Label title={title} text={data} />;
+}
+
+interface Preferences {
+  ApiToken: string;
+}
+
+export function getAPIKey(): string {
+  const preferences = getPreferenceValues<Preferences>();
+  return preferences.ApiToken;
 }

@@ -27,6 +27,16 @@
     "@raycast/api": "^1.44.0",
     "node-fetch": "^3.3.0"
   },
+  "preferences": [
+    {
+      "name": "ApiToken",
+      "title": "AeroData Box API Token",
+      "description": "Your AeroData Box API Token",
+      "type": "password",
+      "default": "",
+      "required": true
+    }
+  ],
   "devDependencies": {
     "@types/node": "18.8.3",
     "@types/react": "18.0.9",

@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import { Flight } from "./responseTypes";
-import { sampleData } from "./sampleResponse";
-import { APIKEY } from "./secrets";
+import { getAPIKey } from "./utils";
 
 export type relativeDate = "yesterday" | "today" | "tomorrow" | "dayAfterTomorrow";
 
@@ -11,6 +10,7 @@ export type relativeDate = "yesterday" | "today" | "tomorrow" | "dayAfterTomorro
 export default class FlightTrack {
   private flightNumber: string;
   private flightDate: Date;
+  public response?: Flight;
 
   /**
    *
@@ -73,29 +73,29 @@ export default class FlightTrack {
     const options = {
       method: "GET",
       headers: {
-        "X-RapidAPI-Key": APIKEY,
+        "X-RapidAPI-Key": getAPIKey(),
         "X-RapidAPI-Host": "aerodatabox.p.rapidapi.com",
       },
     };
 
     try {
-      // const response = await fetch(url, options);
-      // if (response.status === 200) {
-      //   const flightData = await response.json();
-      //   return flightData as Flight[];
-      // } else if (response.status === 204) {
-      //   throw new Error("Empty Response - 204");
-      // } else if (response.status === 400) {
-      //   throw new Error("Bad request");
-      // } else if (response.status === 401) {
-      //   throw new Error("Unauthorized");
-      // } else if (response.status === 500) {
-      //   throw new Error("Server error");
-      // } else {
-      //   throw new Error("Unknown");
-      // }
-      console.log("Sending Request!");
-      return await sampleData;
+      const response = await fetch(url, options);
+      if (response.status === 200) {
+        const flightData = await response.json();
+        return flightData as Flight[];
+      } else if (response.status === 204) {
+        throw new Error("Empty Response - 204");
+      } else if (response.status === 400) {
+        throw new Error("Bad request");
+      } else if (response.status === 401) {
+        throw new Error("Unauthorized");
+      } else if (response.status === 500) {
+        throw new Error("Server error");
+      } else {
+        throw new Error("Unknown");
+      }
+      // console.log("Sending Request!");
+      // return await sampleData;
     } catch (err) {
       throw new Error(`Error getting flight information: ${err}`);
     }

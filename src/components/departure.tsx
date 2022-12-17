@@ -11,8 +11,7 @@ export default function makeDepartureData(data?: Departure) {
   const airportIATACode = data.airport.iata != undefined ? data.airport.iata : "-";
   const airportLocation = data.airport.location;
   if (airportLocation != undefined) {
-    // TODO: Make this as it should be
-    const url = `https://google.maps.com/${airportLocation.lat}/${airportLocation.lon}`;
+    const url = `https://www.google.com/maps/search/?api=1&query=${airportLocation.lat},${airportLocation.lon}&data=${airportIATACode}`;
     airportLocationDetail = (
       <List.Item.Detail.Metadata.Link title="Airport Location" target={url} text={airportIATACode} />
     );

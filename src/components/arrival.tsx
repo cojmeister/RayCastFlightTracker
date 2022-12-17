@@ -10,11 +10,17 @@ export default function makeArrivalData(data?: Arrival) {
   const airportIATACode = data.airport.iata != undefined ? data.airport.iata : "-";
   const airportLocation = data.airport.location;
   if (airportLocation != undefined) {
-    // TODO: Make this as it should be
-    const url = `https://google.maps.com/${airportLocation.lat}/${airportLocation.lon}`;
+    const url = `https://www.google.com/maps/search/?api=1&query=${airportLocation.lat},${airportLocation.lon}&data=${airportIATACode}`;
     airportLocationDetail = (
       <List.Item.Detail.Metadata.Link title="Airport Location" target={url} text={airportIATACode} />
     );
+  }
+
+  let arrivalDate: string;
+  if (data.scheduledTimeUtc != undefined) {
+    arrivalDate = new Date(data.scheduledTimeUtc).toDateString();
+  } else {
+    arrivalDate = "";
   }
 
   return (
@@ -28,6 +34,7 @@ export default function makeArrivalData(data?: Arrival) {
           <List.Item.Detail.Metadata.Separator />
           {makeListDetail("Scheduled Landing Time [Local]", data.scheduledTimeLocal, true)}
           {makeListDetail("Actual Landing Time [Local]", data.actualTimeLocal, true)}
+          <List.Item.Detail.Metadata.Label title="Date" text={arrivalDate} />;
           <List.Item.Detail.Metadata.Separator />
           {makeListDetail("Terminal", data.terminal)}
           {makeListDetail("Gate", data.gate)}
