@@ -9,7 +9,7 @@
   "commands": [
     {
       "name": "trackFlight",
-      "title": "Track your flight",
+      "title": "Track Your Flight",
       "subtitle": "Just type in your flight number",
       "description": "Just fill in will your flight number and we'll get your data!!",
       "mode": "view",
