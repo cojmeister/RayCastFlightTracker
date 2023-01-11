@@ -3,7 +3,7 @@
   "name": "trackflight",
   "title": "Flight Tracker",
   "description": "Track your flight with your flight number.",
-  "icon": "icon.svg",
+  "icon": "icon.png",
   "author": "cojmeister",
   "license": "MIT",
   "categories": [
