@@ -1,22 +1,27 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "trackflight",
-  "title": "TrackFlight",
-  "description": "Track your flight number!!",
-  "icon": "command-icon.png",
+  "title": "Flight Tracker",
+  "description": "Track your flight with your flight number.",
+  "icon": "icon.png",
   "author": "cojmeister",
   "license": "MIT",
+  "categories": [
+    "Data",
+    "Productivity",
+    "Web"
+  ],
   "commands": [
     {
       "name": "trackFlight",
-      "title": "Track Your Flight",
+      "title": "Track Flight Number:",
       "subtitle": "Just type in your flight number",
       "description": "Just fill in will your flight number and we'll get your data!!",
       "mode": "view",
       "arguments": [
         {
           "name": "flightNumber",
-          "placeholder": "Number",
+          "placeholder": "e.g. \"AB123\"",
           "type": "text",
           "required": true
         }

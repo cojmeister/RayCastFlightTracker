@@ -5,7 +5,7 @@ import makeDepartureData from "./components/departure";
 import makeGeneralData from "./components/general";
 import FlightTrack, { relativeDate } from "./flightTrackApi";
 
-export default function Arguments(props: { arguments: { flightNumber: string } }) {
+export default function TrackFlightExtension(props: { arguments: { flightNumber: string } }) {
   const today = new Date(Date.now());
   const [flightDate, setFlightDate] = useState<relativeDate>("today");
 
