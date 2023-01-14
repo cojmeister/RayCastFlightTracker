@@ -90,7 +90,7 @@ export interface Arrival {
   gate?: string;
   baggageBelt?: string;
   runway?: string;
-  quality: typeof FlightAirportMovementQuality[] | string[];
+  quality: (typeof FlightAirportMovementQuality)[] | string[];
 }
 
 export interface Departure {
@@ -106,7 +106,7 @@ export interface Departure {
   gate?: string;
   baggageBelt?: string;
   runway?: string;
-  quality: typeof FlightAirportMovementQuality[] | string[];
+  quality: (typeof FlightAirportMovementQuality)[] | string[];
 }
 
 export interface Flight {
