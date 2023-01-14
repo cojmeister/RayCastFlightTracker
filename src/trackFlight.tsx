@@ -1,8 +1,9 @@
-import { Action, ActionPanel, Icon, List, popToRoot, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, Icon, List, Toast, popToRoot, showToast } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import makeArrivalData from "./components/arrival";
 import makeDepartureData from "./components/departure";
 import makeGeneralData from "./components/general";
+import { APIError, DateError, FlightNumberError } from "./customErrors";
 import FlightTrack, { relativeDate } from "./flightTrackApi";
 
 export default function TrackFlightExtension(props: { arguments: { flightNumber: string } }) {
@@ -14,7 +15,19 @@ export default function TrackFlightExtension(props: { arguments: { flightNumber:
   const flightTrackRef = useRef<FlightTrack>();
 
   useEffect(() => {
-    flightTrackRef.current = new FlightTrack(flightNumber.toUpperCase(), today);
+    try {
+      flightTrackRef.current = new FlightTrack(flightNumber.toUpperCase(), today);
+    } catch (error: unknown) {
+      if (error instanceof DateError || error instanceof FlightNumberError) {
+        showToast(Toast.Style.Failure, "Some Error in your input!", error.message);
+        popToRoot({ clearSearchBar: true });
+      } else {
+        showToast(Toast.Style.Failure, "Unknown Error", "If this persists please contact developer.");
+        setTimeout(() => {
+          popToRoot({ clearSearchBar: true });
+        }, 500);
+      }
+    }
     setFlightDate("today");
   }, []); // only run this effect once when the component mounts
 
@@ -49,15 +62,6 @@ export default function TrackFlightExtension(props: { arguments: { flightNumber:
     );
   }
 
-  // try {
-  //   flight.setTrackingNumber(flightNumber);
-  // } catch (error) {
-  //   console.error(error);
-  //   showToast(Toast.Style.Failure, "Invalid Flight Number", "Should be of type 'AB123'");
-  //   popToRoot({ clearSearchBar: true });
-  //   return;
-  // }
-
   useEffect(() => {
     async function getFlightData() {
       try {
@@ -69,15 +73,24 @@ export default function TrackFlightExtension(props: { arguments: { flightNumber:
         flightTrack.response = (await flightTrack.getFlight())[0];
         flightTrackRef.current = flightTrack;
         setIsLoading(false);
-      } catch (error: unknown) {
+      } catch (error: Error | unknown) {
         console.error(error);
-        showToast(Toast.Style.Failure, "Tracking Error", "Some error while tracking");
-        popToRoot({ clearSearchBar: true });
+        if (error instanceof APIError) {
+          showToast(Toast.Style.Failure, "Tracking Error", error.message);
+          popToRoot({ clearSearchBar: true });
+        } else if (error instanceof DateError || error instanceof FlightNumberError) {
+          showToast(Toast.Style.Failure, "Some Error in your input!", error.message);
+          popToRoot({ clearSearchBar: true });
+        } else {
+          showToast(Toast.Style.Failure, "Unknown Error", "If this persists please contact developer.");
+          setTimeout(() => {
+            popToRoot({ clearSearchBar: true });
+          }, 3000);
+        }
       }
     }
     getFlightData();
   }, [flightDate]);
-
   return (
     <List isShowingDetail={true} navigationTitle={flightNumber.toUpperCase()} isLoading={isLoading}>
       <List.Item

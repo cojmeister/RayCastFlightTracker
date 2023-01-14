@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import { Flight } from "./responseTypes";
 import { getAPIKey } from "./utils";
+import { APIError, DateError, FlightNumberError, HttpStatusCode } from "./customErrors";
 
 export type relativeDate = "yesterday" | "today" | "tomorrow" | "dayAfterTomorrow";
 
@@ -19,7 +20,7 @@ export default class FlightTrack {
    */
   constructor(flightNumber: string, flightDate: Date) {
     if (!this.isValidFlightNumber(flightNumber)) {
-      throw new Error("Invalid flight number format");
+      throw new FlightNumberError("Invalid flight number format");
     }
     this.flightNumber = flightNumber;
     this.flightDate = flightDate;
@@ -57,7 +58,7 @@ export default class FlightTrack {
         newDate = new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000);
         break;
       default:
-        throw new Error("Invalid date specified");
+        throw new DateError("Invalid date specified");
     }
     this.flightDate = newDate;
   }
@@ -80,24 +81,37 @@ export default class FlightTrack {
 
     try {
       const response = await fetch(url, options);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         const flightData = await response.json();
         return flightData as Flight[];
-      } else if (response.status === 204) {
-        throw new Error("Empty Response - 204");
-      } else if (response.status === 400) {
-        throw new Error("Bad request");
-      } else if (response.status === 401) {
-        throw new Error("Unauthorized");
-      } else if (response.status === 500) {
-        throw new Error("Server error");
+      } else if (response.status === HttpStatusCode.EMPTY_RESPONSE) {
+        throw new APIError({
+          name: "Empty Response",
+          httpCode: HttpStatusCode.BAD_REQUEST,
+          description: "The API response came back empty - this is probably due to an inexistent flight.",
+        });
+      } else if (response.status === HttpStatusCode.BAD_REQUEST) {
+        const respMessage: { message: string } = <{ message: string }>await response.json();
+        throw new APIError({
+          name: "Empty Response",
+          httpCode: HttpStatusCode.BAD_REQUEST,
+          description: respMessage.message,
+        });
+      } else if (response.status === HttpStatusCode.UNAUTHORIZED) {
+        throw new APIError({
+          name: "User Unauthorized - Suscribe to the API!",
+          httpCode: HttpStatusCode.UNAUTHORIZED,
+          description: "unauthorized",
+        });
+      } else if (response.status === HttpStatusCode.INTERNAL_SERVER) {
+        throw new APIError({ name: "Server Error" });
+      } else if (response.status === HttpStatusCode.NOT_FOUND) {
+        throw new APIError({ name: "Server Not Found" });
       } else {
-        throw new Error("Unknown");
+        throw new APIError({ name: "Unknown", isOperational: false });
       }
-      // console.log("Sending Request!");
-      // return await sampleData;
     } catch (err) {
-      throw new Error(`Error getting flight information: ${err}`);
+      throw new APIError({ name: `Error getting flight information: ${err}` });
     }
   }
 }
