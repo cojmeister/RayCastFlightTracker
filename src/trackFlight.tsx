@@ -4,6 +4,7 @@ import makeArrivalData from "./components/arrival";
 import makeDepartureData from "./components/departure";
 import makeGeneralData from "./components/general";
 import FlightTrack, { relativeDate } from "./flightTrackApi";
+import { HeyThere } from "./costumErrors";
 
 export default function TrackFlightExtension(props: { arguments: { flightNumber: string } }) {
   const today = new Date(Date.now());
@@ -71,13 +72,14 @@ export default function TrackFlightExtension(props: { arguments: { flightNumber:
         setIsLoading(false);
       } catch (error: unknown) {
         console.error(error);
+        if (error.message) {
+        }
         showToast(Toast.Style.Failure, "Tracking Error", "Some error while tracking");
         popToRoot({ clearSearchBar: true });
       }
     }
     getFlightData();
   }, [flightDate]);
-
   return (
     <List isShowingDetail={true} navigationTitle={flightNumber.toUpperCase()} isLoading={isLoading}>
       <List.Item
